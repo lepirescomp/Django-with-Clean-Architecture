@@ -1,5 +1,5 @@
 import abc
-from .models import BatchORM, OrderLineORM
+from .models import BatchORM, OrderLineORM, AllocationsORM
 from .entities import Batch, OrderLine
 
 class AbstractRepository(abc.ABC):
@@ -14,25 +14,45 @@ class AbstractRepository(abc.ABC):
 class ORMRepository(AbstractRepository):
     @staticmethod
     def add(batch):
+        if len(batch._allocated) == 0:            
+            batch_orm = BatchORM.objects.create(
+                reference = batch.reference,
+                sku = batch.sku,
+                qty = batch.qty,
+                eta = batch.eta,
+            )
+                         
         for orderline in batch._allocated:
             if orderline is not None:
-                orderline = OrderLineORM.objects.create(
+                orderline_orm = OrderLineORM.objects.create(
                     reference=orderline.reference,
                     sku=orderline.sku,
                     qty=orderline.qty)
 
-                BatchORM.objects.create(
+                batch_orm = BatchORM.objects.create(
                     reference = batch.reference,
                     sku = batch.sku,
                     qty = batch.qty,
                     eta = batch.eta,
-                    allocated = orderline
+                    
                 )
+
+                AllocationsORM.objects.create(
+                    order_line=order_line,
+                    batch=batch_orm
+                )
+
+
     @staticmethod
     def get(reference):
+        orderline_id = None
+
         batch_orm = BatchORM.objects.get(reference=reference)
-        orderline_id = batch_orm.allocated_id
-        orderline_orm = OrderLineORM.objects.filter(id=orderline_id)
+        orderline_id = AllocationsORM.objects.get(batch_id=batch_orm.id)
+
+        if orderline_id is not None:
+            orderline_orm = OrderLineORM.objects.filter(id=orderline_id.id)
+
         for ol in orderline_orm:
 
             batch =Batch(
@@ -47,3 +67,5 @@ class ORMRepository(AbstractRepository):
                 sku=ol.sku,
                 qty=ol.qty
                 ))
+                
+        return batch

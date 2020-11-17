@@ -30,6 +30,14 @@ class Batch:
             return False
         return self.eta > other.eta
 
+    def __eq__(self, other):
+        if not isinstance(other, Batch):
+            return False
+        return other.reference == self.reference
+
+    def __hash__(self):
+        return hash(self.reference)
+
     @property
     def alocatted_quantity(self):
         return sum(order_line.qty for order_line in self._allocated)
