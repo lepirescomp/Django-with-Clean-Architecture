@@ -15,7 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from control_board.views import AllocateViewSet
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('allocate/', AllocateViewSet.as_view(), name="allocate"),
 ]

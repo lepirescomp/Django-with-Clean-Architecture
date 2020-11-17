@@ -67,5 +67,21 @@ class ORMRepository(AbstractRepository):
                 sku=ol.sku,
                 qty=ol.qty
                 ))
-                
+
         return batch
+
+    @staticmethod
+    def list():
+        batches_return_list = []
+
+        batches = BatchORM.objects.all()
+        
+        for batch_orm in batches:
+            batches_return_list.append(Batch(
+                reference=batch_orm.reference,
+                sku = batch_orm.sku,
+                qty= batch_orm.qty,
+                eta = batch_orm.eta,
+            ))
+
+        return batches_return_list

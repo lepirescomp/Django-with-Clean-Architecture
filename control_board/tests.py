@@ -1,4 +1,6 @@
 from datetime import date, timedelta
+from django.urls import reverse
+from django.test import Client
 import pytest
 
 from .entities import Batch, OrderLine, allocate, OutOfStock
@@ -83,10 +85,18 @@ def test_raises_out_of_stock_exception_if_cannot_allocate():
 
     with pytest.raises(OutOfStock, match='SMALL-FORK'):
         allocate(OrderLine('order2', 'SMALL-FORK', 1), [batch])
-        
+
 @pytest.mark.django_db
 def test_creates_batch_orm():
     batch, line = make_batch_and_line("ELEGANT-LAMP", 2, 2)
     allocate(line,batch)
     ORMRepository.add(batch)
     ORMRepository.get(batch.reference)
+
+@pytest.mark.django_db
+def test_view():
+    client = Client()
+    ORMRepository.add(Batch("BATCH-1","batch-sku",10,None))   
+    result = client.post(reverse("allocate"),kwargs={"reference":"BATCH-1", "sku":"batch-sku", "qty":1},cHTTP_ACCEPT='application/json')
+    assert result.status_code == 201
+    assert len(ORMRepository.list()) == 1
