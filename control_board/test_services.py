@@ -25,7 +25,7 @@ def test_returns_allocation():
     repo = FakeRepository([batch])
 
     result = allocate(line, repo)
-    assert result.reference == "b1"
+    assert result[0].reference == "b1"
 
 
 def test_error_for_invalid_sku():

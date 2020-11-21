@@ -11,6 +11,11 @@ class AbstractRepository(abc.ABC):
     def get(self, reference):
         raise NotImplementedError
 
+    @abc.abstractmethod
+    def list(self):
+        raise NotImplementedError
+
+
 class ORMRepository(AbstractRepository):
     @staticmethod
     def add(batch):
@@ -38,7 +43,7 @@ class ORMRepository(AbstractRepository):
                 )
 
                 AllocationsORM.objects.create(
-                    order_line=order_line,
+                    order_line=orderline_orm,
                     batch=batch_orm
                 )
 
@@ -62,7 +67,7 @@ class ORMRepository(AbstractRepository):
                 eta = batch_orm.eta,
                 )
             
-            batch.allocate(OrderLine(
+            batch.batch_allocate(OrderLine(
                 reference=ol.reference,
                 sku=ol.sku,
                 qty=ol.qty

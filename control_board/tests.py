@@ -76,7 +76,7 @@ def test_returns_allocated_batch_ref():
     shipment_batch = Batch("shipment-batch-ref", "HIGHBROW-POSTER", 100, eta=tomorrow)
     line = OrderLine("oref", "HIGHBROW-POSTER", 10)
     allocation = allocate(line, [in_stock_batch, shipment_batch])
-    assert allocation == in_stock_batch.reference
+    assert allocation.reference == in_stock_batch.reference
 
 
 def test_raises_out_of_stock_exception_if_cannot_allocate():
@@ -94,9 +94,16 @@ def test_creates_batch_orm():
     ORMRepository.get(batch.reference)
 
 @pytest.mark.django_db
-def test_view():
+def test_view_happy_path():
     client = Client()
     ORMRepository.add(Batch("BATCH-1","batch-sku",10,None))   
     result = client.post(reverse("allocate"),kwargs={"reference":"BATCH-1", "sku":"batch-sku", "qty":1},cHTTP_ACCEPT='application/json')
     assert result.status_code == 201
     assert len(ORMRepository.list()) == 1
+
+@pytest.mark.django_db
+def test_view_unhappy_path():
+    client = Client()
+    ORMRepository.add(Batch("BATCH-1","batch-sku",10,None))   
+    result = client.post(reverse("allocate"),kwargs={"reference":"BATCH-1", "sku":"batch-sku-invalid", "qty":1},cHTTP_ACCEPT='application/json')
+    assert result.status_code == 400

@@ -15,13 +15,11 @@ def is_valid_sku(sku, batches):
 
 def allocate(line, repo):
     batches = repo.list()
-
+    
     if not is_valid_sku(line.sku, batches):
         raise InvalidSku(f'Invalid sku {line.sku}')
-    
-    batch = entity_allocate(line, batches)
 
     if isinstance(repo,ORMRepository):
         ORMRepository.add(batch)
     
-    return batch
+    return batches

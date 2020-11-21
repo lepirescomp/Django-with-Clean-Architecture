@@ -8,8 +8,8 @@ def allocate(orderline, batches):
         batches=[batches]
     try:
         batch = next(b for b in sorted(batches) if b.can_allocate(orderline))
-        batch.allocate(orderline)
-        return batch.reference
+        batch.batch_allocate(orderline)
+        return batch
     except StopIteration:
         raise OutOfStock(f'Out of stock for sku {orderline.sku}')
 
@@ -53,7 +53,7 @@ class Batch:
         if orderline in self._allocated:
             self._allocated.remove(orderline)
     
-    def allocate(self, line):
+    def batch_allocate(self, line):
         if self.can_allocate(line):
             self._allocated.add(line)
 
