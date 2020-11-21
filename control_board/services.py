@@ -4,7 +4,7 @@ from __future__ import annotations
 from .models import BatchORM, OrderLineORM
 from .entities import OrderLine
 from .entities import allocate as entity_allocate
-from .repository import AbstractRepository, ORMRepository
+from .repository import AbstractRepository, ORMRepository, FakeRepository
 
 class InvalidSku(Exception):
     pass
@@ -21,5 +21,8 @@ def allocate(line, repo):
 
     if isinstance(repo,ORMRepository):
         ORMRepository.add(batch)
-    
+
+    if isinstance(repo,FakeRepository):
+        FakeRepository.add(batch)
+
     return batches

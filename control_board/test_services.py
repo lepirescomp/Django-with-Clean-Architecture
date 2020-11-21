@@ -1,23 +1,8 @@
 import pytest
 
 from .entities import Batch, OrderLine
-from .repository import AbstractRepository
+from .repository import AbstractRepository, FakeRepository
 from .services import allocate, InvalidSku
-
-
-class FakeRepository(AbstractRepository):
-    def __init__(self, batches):
-        self._batches = batches
-
-    def add(self, batch):
-        self._batches.add(batch)
-
-    def get(self, reference):
-        return next(b for b in self._batches if b.reference == reference)
-
-    def list(self):
-        return self._batches
-
 
 def test_returns_allocation():
     line = OrderLine("o1", "COMPLICATED-LAMP", 10)

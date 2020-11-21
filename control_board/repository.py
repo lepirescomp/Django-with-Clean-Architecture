@@ -90,3 +90,19 @@ class ORMRepository(AbstractRepository):
             ))
 
         return batches_return_list
+
+
+class FakeRepository(AbstractRepository):
+    def __init__(self, batches):
+        self._batches = batches
+
+    def add(self, batch):
+        self._batches.add(batch)
+
+    def get(self, reference):
+        return next(b for b in self._batches if b.reference == reference)
+
+    def list(self):
+        return self._batches
+
+
