@@ -1,5 +1,6 @@
 from django.views.generic import CreateView
 from django.http.response import HttpResponse
+import datetime
 
 from .repository import ORMRepository
 from .entities import OrderLine, OutOfStock
@@ -23,3 +24,17 @@ class AllocateViewSet(CreateView):
 
         return HttpResponse(status=201)
 
+class AddBatchViewSet(CreateView):
+
+    def post(self, request, *args, **kwargs):
+        repo = ORMRepository
+        kwargs = request.environ["kwargs"]
+        
+        eta = kwargs['eta']
+        if eta is not None:
+            eta = datetime.fromisoformat(eta).date()
+        services.add_batch(
+            kwargs['ref'], kwargs['sku'], kwargs['qty'], eta,
+            repo
+        )
+        return HttpResponse(status=201)

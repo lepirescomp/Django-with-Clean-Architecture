@@ -97,7 +97,7 @@ class FakeRepository(AbstractRepository):
         self._batches = batches
 
     def add(self, batch):
-        self._batches.add(batch)
+        self._batches.append(batch)
 
     def get(self, reference):
         return next(b for b in self._batches if b.reference == reference)

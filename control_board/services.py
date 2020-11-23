@@ -13,16 +13,20 @@ class InvalidSku(Exception):
 def is_valid_sku(sku, batches):
     return sku in [b.sku for b in batches]
 
-def allocate(line, repo):
+
+def add_batch(ref, sku, qty, eta=None, repo):
+    repo.add(Batch(ref, sku, qty, eta))
+
+
+def allocate(id, sku, qty, repo):
     batches = repo.list()
-    
+    line = OrderLine(id,sku,qty)  
+      
     if not is_valid_sku(line.sku, batches):
         raise InvalidSku(f'Invalid sku {line.sku}')
 
-    if isinstance(repo,ORMRepository):
-        ORMRepository.add(batch)
+    batch = entity_allocate(line,batches)
 
-    if isinstance(repo,FakeRepository):
-        FakeRepository.add(batch)
+    repo.add(batch)
 
-    return batches
+    return [batch]

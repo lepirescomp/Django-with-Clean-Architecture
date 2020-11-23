@@ -15,9 +15,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from control_board.views import AllocateViewSet
+from control_board.views import AllocateViewSet, AddBatchViewSet
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('allocate/', AllocateViewSet.as_view(), name="allocate"),
+    path('add_batch/', AddBatchViewSet.as_view(), name="allocate"),
 ]

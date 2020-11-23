@@ -107,3 +107,9 @@ def test_view_unhappy_path():
     ORMRepository.add(Batch("BATCH-1","batch-sku",10,None))   
     result = client.post(reverse("allocate"),kwargs={"reference":"BATCH-1", "sku":"batch-sku-invalid", "qty":1},cHTTP_ACCEPT='application/json')
     assert result.status_code == 400
+
+def test_post_to_add_batch():
+    client = Client()
+    result = client.post(reverse("allocate"),kwargs={"reference":"BATCH-1", "sku":"batch-sku-invalid", "qty":1, "eta": None},cHTTP_ACCEPT='application/json')
+
+    assert result.status_code == 201
